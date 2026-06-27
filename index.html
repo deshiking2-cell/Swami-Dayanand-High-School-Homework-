@@ -3,35 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Homework Portal</title>
+    <title>स्कूल होमवर्क पोर्टल</title>
     <style>
         body { font-family: 'Arial', sans-serif; margin: 0; padding: 0; background-color: #f4f6f9; color: #333; }
         header { background-color: #1e3a8a; color: white; text-align: center; padding: 25px 10px; }
-        header h1 { margin: 0; font-size: 26px; font-weight: bold; }
-        header p { margin: 8px 0 0; font-size: 15px; opacity: 0.9; }
-        
-        .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
-        .sheet-container { background: white; padding: 10px; border-radius: 8px; box-shadow: 0 3px 6px rgba(0,0,0,0.08); overflow: hidden; }
-        
-        /* गुगल शीट को मोबाइल में सही दिखाने के लिए रेस्पॉन्सिव स्टाइल */
-        iframe { width: 100%; height: 600px; border: none; border-radius: 4px; }
+        header h1 { margin: 0; font-size: 24px; font-weight: bold; }
+        header p { margin: 8px 0 0; font-size: 14px; opacity: 0.9; }
+        .container { max-width: 900px; margin: 20px auto; padding: 0 15px; }
+        .class-section { background: white; margin-bottom: 25px; padding: 15px; border-radius: 8px; box-shadow: 0 3px 6px rgba(0,0,0,0.08); overflow: hidden; }
+        .class-title { background-color: #007bff; color: white; padding: 12px; margin: -15px -15px 15px -15px; font-size: 18px; font-weight: bold; display: flex; align-items: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #e5e7eb; padding: 12px; text-align: left; }
+        th { background-color: #ffffff; color: #1e3a8a; font-weight: bold; font-size: 16px; }
+        td { color: #4b5563; font-size: 15px; }
+        tr:nth-child(even) { background-color: #f9fafb; }
+        @media (max-width: 600px) { th, td { padding: 10px; font-size: 14px; } header h1 { font-size: 20px; } }
     </style>
 </head>
 <body>
 
 <header>
-    <h1> Swami Dayanand High School
-      <h2>  st.Johns English High School
-    </h1> - Digital Homework Portal </h1>
-    <p> class 1 to 10 daily Homework </p>
+    <h1>डिजिटल गृहकार्य पोर्टल</h1>
 </header>
 
-<div class="container">
-    <div class="sheet-container">
-        
-        <iframe src="https://docs.google.com/spreadsheets/d/1CzUrgl2PDi36N0EdW6mwLwbCzcdTUF1-Nbg70umzMDg/edit?usp=drivesdk"></iframe>
-    </div>
+<div class="container" id="homework-container">
+    <!-- यहाँ पर डेटा अपने आप लोड होकर दिखाई देगा -->
+    <p style="text-align: center; color: #666;">होमवर्क लोड हो रहा है, कृपया प्रतीक्षा करें...</p>
 </div>
+
+<script>
+    // ⚠️ यहाँ नीचे उद्धरण चिह्नों "" के बीच अपना स्टेप 2 वाला .csv लिंक पेस्ट करें
+    const sheetCsvUrl = ",Subject ,Homework 
+Class 1st,Marathi - ,
+Class 2nd,hindi,
+Class 3rd,english,
+Class 4th,,
+Class 5th,,
+Class 6th,,
+class 7th,,
+Class 8th,,
+Class 9th,,
+Class 10th,,;
+
+    async function loadHomework() {
+        try {
+            const response = await fetch(sheetCsvUrl);
+            const data = await response.text();
+            const rows = data.split('\n').slice(1); // हेडर लाइन छोड़ कर
+            
+            let classesData = {};
+            
+            rows.forEach(row => {
+                // CSV की लाइनों को अलग करना
+                const columns = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                if(columns.length >= 3) {
+                    const className = columns[0].replace(/"/g, '').trim();
+                    const subject = columns[1].replace(/"/g, '').trim();
+                    const homework = columns[2].replace(/"/g, '').trim();
+                    
+                    if(className) {
+                        if(!classesData[className]) {
+                            classesData[className] = [];
+                        }
+                        classesData[className].push({ subject, homework });
+                    }
+                }
+            });
+
+            const container = document.getElementById('homework-container');
+            container.innerHTML = ''; // लोडिंग टेक्स्ट हटाएं
+
+            // हर क्लास के लिए सुंदर बॉक्स बनाना (जैसा 103851.jpg में है)
+            for (const [className, items] of Object.entries(classesData)) {
+                let classBox = document.createElement('div');
+                classBox.className = 'class-section';
+                
+                let tableRows = items.map(item => `
+                    <tr>
+                        <td><b>${item.subject}</b></td>
+                        <td>${item.homework}</td>
+                    </tr>
+                `).join('');
+
+                classBox.innerHTML = `
+                    <div class="class-title">📋 ${className}</div>
+                    <table>
+                        <tr>
+                            <th> (Subject)</th>
+                            <th> (Today's Homework)</th>
+                        </tr>
+                        ${tableRows}
+                    </table>
+                `;
+                container.appendChild(classBox);
+            }
+        } catch (error) {
+            document.getElementById('homework-container').innerHTML = `<p style="color:red; text-align:center;">डेटा लोड करने में समस्या आई। कृपया अपना CSV लिंक जांचें।</p>`;
+        }
+    }
+
+    loadHomework();
+</script>
 
 </body>
 </html>
