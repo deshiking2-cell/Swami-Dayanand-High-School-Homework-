@@ -33,17 +33,7 @@
 
 <script>
     // ⚠️ यहाँ नीचे उद्धरण चिह्नों "" के बीच अपना स्टेप 2 वाला .csv लिंक पेस्ट करें
-    const sheetCsvUrl = ",Subject ,Homework 
-Class 1st,Marathi - ,
-Class 2nd,hindi,
-Class 3rd,english,
-Class 4th,,
-Class 5th,,
-Class 6th,,
-class 7th,,
-Class 8th,,
-Class 9th,,
-Class 10th,,;
+    const sheetCsvUrl = "https://docs.google.com/spreadsheets/d/1CzUrgl2PDi36N0EdW6mwLwbCzcdTUF1-Nbg70umzMDg/edit?usp=drivesdk;
 
     async function loadHomework() {
         try {
@@ -89,8 +79,8 @@ Class 10th,,;
                     <div class="class-title">📋 ${className}</div>
                     <table>
                         <tr>
-                            <th> (Subject)</th>
-                            <th> (Today's Homework)</th>
+                            <th>विषय (Subject)</th>
+                            <th>आज का होमवर्क (Today's Homework)</th>
                         </tr>
                         ${tableRows}
                     </table>
